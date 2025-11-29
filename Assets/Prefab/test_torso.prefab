@@ -84,10 +84,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8605e760837c034ebe910f0d833cc88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Socket
-  acceptedType: 0
-  acceptedTier: 0
+  acceptedType: 2
   socketName: Head
-  debugColor: {r: 1, g: 0, b: 1, a: 1}
 --- !u!1 &7103974800395528798 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -211801468931463307, guid: 7fe06eed126074742b36247b371ee5ab, type: 3}
@@ -105,10 +103,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8605e760837c034ebe910f0d833cc88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Socket
-  acceptedType: 2
-  acceptedTier: 0
+  acceptedType: 3
   socketName: Brazo_R
-  debugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &8106751144668678036 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8005451700250741439, guid: 7fe06eed126074742b36247b371ee5ab, type: 3}
@@ -126,7 +122,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8605e760837c034ebe910f0d833cc88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Socket
-  acceptedType: 2
-  acceptedTier: 0
+  acceptedType: 3
   socketName: Brazo_L
-  debugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

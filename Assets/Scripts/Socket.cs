@@ -1,20 +1,13 @@
 using UnityEngine;
 
-public class Socket : MonoBehaviour // ¡HEREDA DE MONOBEHAVIOUR!
+public class Socket : MonoBehaviour
 {
-    [Header("Restricciones")]
-    public PartType acceptedType = PartType.Arm; 
-    public Tier acceptedTier = Tier.T1;         
-
-    [Header("Debug")]
-    public string socketName = "Brazo_R"; 
-    public Color debugColor = Color.yellow;
-
-    void OnDrawGizmos()
+    public PartType acceptedType;
+    public string socketName;
+    
+    private void OnDrawGizmos()
     {
-        // ... (El código de visualización del Gizmo)
-        Gizmos.color = debugColor;
-        Gizmos.DrawWireSphere(transform.position, 0.2f);
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 0.5f); 
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, 0.1f);
     }
 }

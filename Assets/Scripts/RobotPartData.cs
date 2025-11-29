@@ -1,23 +1,22 @@
 using UnityEngine;
 
-// [CreateAssetMenu] permite crear el archivo de datos desde el menú de Unity.
-[CreateAssetMenu(fileName = "New Part", menuName = "Robot/Part Data")]
-public class RobotPartData : ScriptableObject // ¡HEREDA DE SCRIPTABLEOBJECT!
+[CreateAssetMenu(fileName = "NewPartData", menuName = "Robot/Part Data")]
+public class RobotPartData : ScriptableObject
 {
     [Header("Identificación")]
-    public string partName = "Brazo_T1_Alpha";
-    public PartType partType = PartType.Arm; 
-    public Tier partTier = Tier.T1;        
+    [field: SerializeField] public string PartName { get; private set; } = "Pieza Nueva";
+    [field: SerializeField] public PartType PartType { get; private set; } = PartType.Arms;
+    [field: SerializeField] public string PartID { get; private set; }
+    [field: SerializeField] public Tier PartTier { get; private set; } = Tier.T1;
     
     [Header("Modelo")]
-    public GameObject partPrefab; 
+    [field: SerializeField] public GameObject PartPrefab { get; private set; }
 
-    [Header("Restricciones de Núcleo")]
-    // Solo es relevante si partType es Core
-    public Tier maxAllowedTier = Tier.T1;
-    
+    [Header("Restricciones")]
+    [field: SerializeField] public Tier MaxAllowedTier { get; private set; } = Tier.T3; 
+
     [Header("Estadísticas")]
-    public float healthBonus = 100f;
-    public float energyConsumption = 5f;
-    public float weight = 5f;
+    [field: SerializeField] public float HealthBonus { get; private set; } = 100f;
+    [field: SerializeField] public float EnergyConsumption { get; private set; } = 5f;
+    [field: SerializeField] public float Weight { get; private set; } = 5f;
 }

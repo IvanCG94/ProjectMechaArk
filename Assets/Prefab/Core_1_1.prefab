@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3286609577938368054, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_Name
-      value: Socket_Torso
+      value: Core
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -82,6 +82,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Socket
   acceptedType: 1
-  acceptedTier: 0
   socketName: Torso
-  debugColor: {r: 0, g: 1, b: 1, a: 1}

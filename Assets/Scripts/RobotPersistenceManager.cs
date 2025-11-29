@@ -1,35 +1,42 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System.Linq; // Necesario para la función LINQ (FirstOrDefault, etc.)
+using System.Linq;
 
-public class RobotPersistenceManager : MonoBehaviour 
+[System.Serializable]
+public class InventoryEntry 
 {
-    // Singleton estático para acceder desde cualquier parte.
-    public static RobotPersistenceManager Instance; 
-    
-    [Header("Inventario Global")]
-    // Todas las piezas que el jugador puede seleccionar.
-    public List<RobotPartData> availableParts; 
+    public string PartID;
+    public int Count;    
+}
 
-    [Header("Piezas Seleccionadas")]
-    // El Core, que establece el límite de Tier.
-    public RobotPartData selectedCoreData;
-    
-    // Diccionario para guardar las elecciones del jugador.
-    // Key: socketName (Ej: "Brazo_R"), Value: Ficha Técnica (RobotPartData) de la pieza elegida.
-    public Dictionary<string, RobotPartData> SelectedParts = 
-        new Dictionary<string, RobotPartData>(); 
+public class RobotPersistenceManager : MonoBehaviour
+{
+    public static RobotPersistenceManager Instance { get; private set; }
 
-    [Header("Debug/Estado")]
-    public string nextSceneName = "Scene_Game"; 
-    
-    // --- Lógica de Singleton y Persistencia ---
-    void Awake()
+    // --- BASE DE DATOS ---
+    [Header("Base de Datos Global")]
+    [SerializeField] private List<RobotPartData> _allPartsData = new List<RobotPartData>();
+    private Dictionary<string, RobotPartData> _partIDToDataMap = new Dictionary<string, RobotPartData>();
+
+    // --- INVENTARIO ---
+    [Header("Inventario Inicial (Llenar en el Inspector)")]
+    [SerializeField] private List<InventoryEntry> _initialInventoryList = new List<InventoryEntry>();
+    private Dictionary<string, int> _playerInventory = new Dictionary<string, int>(); 
+    public IReadOnlyDictionary<string, int> PlayerInventory => _playerInventory;
+
+    // --- SELECCIONES ACTIVAS ---
+    public Dictionary<string, RobotPartData> SelectedParts { get; private set; } = new Dictionary<string, RobotPartData>();
+    public RobotPartData SelectedCoreData { get; private set; }
+
+    private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Evita que se destruya al cambiar de escena.
+            DontDestroyOnLoad(gameObject);
+            InitializeDataMaps(); 
+            InitializeInventory(); 
         }
         else
         {
@@ -37,48 +44,78 @@ public class RobotPersistenceManager : MonoBehaviour
         }
     }
 
-    // --- FUNCIONES CLAVE PARA EL MENÚ DE PERSONALIZACIÓN ---
-
-    // 1. Función para obtener solo las piezas compatibles con el Tier del Core.
-    public List<RobotPartData> GetAvailablePartsByFilter(PartType typeFilter)
+    private void InitializeDataMaps()
     {
-        if (selectedCoreData == null)
+        _partIDToDataMap.Clear();
+        foreach (var part in _allPartsData)
         {
-            // Si no hay Core seleccionado, solo ofrece Cores.
-            return availableParts.Where(p => p.partType == PartType.Core).ToList();
+            if (!string.IsNullOrEmpty(part.PartID))
+            {
+                _partIDToDataMap.TryAdd(part.PartID, part);
+            }
         }
-        
-        // Obtiene el Tier máximo permitido por el Core.
-        Tier maxTier = selectedCoreData.maxAllowedTier; 
-
-        // Devuelve las piezas que cumplen con el Tipo y el Tier.
-        return availableParts
-            .Where(p => p.partType == typeFilter && p.partTier <= maxTier)
-            .ToList();
     }
     
-    // 2. Función para guardar la elección de una pieza en un Socket.
-    public void SelectPartForSocket(string socketName, RobotPartData partData)
+    private void InitializeInventory()
     {
-        if (partData == null) return;
-        
-        // Si el Socket ya existe en el diccionario, actualiza el valor. Si no, lo agrega.
-        SelectedParts[socketName] = partData;
-        
-        Debug.Log($"Guardado: {partData.partName} en socket {socketName}");
+        _playerInventory.Clear();
+        foreach (var entry in _initialInventoryList)
+        {
+            if (!string.IsNullOrEmpty(entry.PartID) && !_playerInventory.ContainsKey(entry.PartID))
+            {
+                _playerInventory.Add(entry.PartID, entry.Count);
+            }
+        }
     }
 
-    // 3. Función para iniciar el juego.
-    public void StartGame()
+    // --- API DE INVENTARIO Y SELECCION ---
+
+    public int GetPartCount(string partID)
     {
-        // En un juego real, aquí se verificaría que todos los sockets obligatorios estén llenos.
-        if (selectedCoreData == null)
+        _playerInventory.TryGetValue(partID, out int count);
+        return count;
+    }
+
+    public void AddItemToInventory(string partID, int amount)
+    {
+        if (_playerInventory.ContainsKey(partID))
+            _playerInventory[partID] += amount;
+        else
+            _playerInventory.Add(partID, amount);
+    }
+
+    public void RemoveItemFromInventory(string partID, int amount)
+    {
+        if (_playerInventory.ContainsKey(partID))
         {
-            Debug.LogError("¡Debe seleccionar un Núcleo (Core) antes de empezar!");
-            return;
+            _playerInventory[partID] -= amount;
+            if (_playerInventory[partID] < 0) _playerInventory[partID] = 0;
+        }
+    }
+
+    public List<RobotPartData> GetAvailablePartsByFilter(PartType filterType)
+    {
+        return _allPartsData.Where(part => part.PartType == filterType).ToList();
+    }
+    
+    // [LOGICA DE INDEPENDENCIA TOTAL] Guarda siempre con el nombre del socket específico.
+    public void SelectPartForSocket(string socketName, RobotPartData partData)
+    {
+        if (partData.PartType == PartType.Core)
+        {
+            SelectedCoreData = partData;
         }
 
-        // Carga la escena de juego.
-        UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneName);
+        SelectedParts[socketName] = partData; 
+    }
+
+    public void StartGame()
+    {
+        if (SelectedCoreData == null)
+        {
+            Debug.LogError("No se puede iniciar sin un Core.");
+            return;
+        }
+        SceneManager.LoadScene("Scene_Game"); 
     }
 }

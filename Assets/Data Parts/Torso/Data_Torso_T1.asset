@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fec0c29433e9fc499951dd8001ed500, type: 3}
   m_Name: Data_Torso_T1
   m_EditorClassIdentifier: Assembly-CSharp::RobotPartData
-  partName: Torso_T1_Alpha
-  partType: 1
-  partTier: 0
-  partPrefab: {fileID: 1394019180428456058, guid: ac5d9b5bc4b23ef40a148b876bbb31c6, type: 3}
-  maxAllowedTier: 0
-  healthBonus: 100
-  energyConsumption: 5
-  weight: 5
+  <PartName>k__BackingField: Torso TEST
+  <PartType>k__BackingField: 1
+  <PartID>k__BackingField: Torso_1_1
+  <PartTier>k__BackingField: 0
+  <PartPrefab>k__BackingField: {fileID: 1394019180428456058, guid: ac5d9b5bc4b23ef40a148b876bbb31c6, type: 3}
+  <MaxAllowedTier>k__BackingField: 0
+  <HealthBonus>k__BackingField: 100
+  <EnergyConsumption>k__BackingField: 5
+  <Weight>k__BackingField: 5

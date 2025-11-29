@@ -6,252 +6,263 @@ using System.Linq;
 
 public class RobotCustomizationUI : MonoBehaviour
 {
-    [Header("Referencias de Componentes")]
+    [Header("Referencias")]
     public CustomizationAssembler assembler; 
-    
-    [Header("Elementos de UI")]
     public Transform partSelectionPanel; 
-    public GameObject partButtonPrefab; 
+    public GameObject partButtonPrefab;  
     public Button startGameButton;      
 
-    [Header("Estado Interno")]
+    [Header("Estado Interno UI")]
     private List<Socket> currentTorsoSockets = new List<Socket>();
     private string targetSocketName; 
+    private string _currentSocketDisplayName; 
 
     void Start()
     {
-        // Al iniciar, mostramos la selección de Núcleos
-        InitializeCoreSelection();
+        InitializeCoreSelection(); 
         
-        // Configurar el botón de inicio
         if (startGameButton != null)
         {
             startGameButton.onClick.AddListener(RobotPersistenceManager.Instance.StartGame);
-            CheckIfRobotIsComplete(); // Verifica si se puede iniciar
+            CheckIfRobotIsComplete();
         }
     }
     
     // =================================================================================
-    // PASO 1: SELECCIÓN DEL NÚCLEO (CORE)
+    // NAVEGACIÓN Y FLUJO PRINCIPAL
     // =================================================================================
 
-    void InitializeCoreSelection()
+    public void InitializeCoreSelection()
     {
         ClearSelectionPanel();
         CheckIfRobotIsComplete();
 
-        // Obtener solo piezas de tipo Core
-        List<RobotPartData> coreParts = RobotPersistenceManager.Instance.GetAvailablePartsByFilter(PartType.Core);
+        var coreParts = RobotPersistenceManager.Instance.GetAvailablePartsByFilter(PartType.Core);
 
-        foreach (RobotPartData part in coreParts)
+        foreach (var part in coreParts)
         {
-            CreateButton(part.partName, () => SelectCoreAndBuild(part));
+            CreateButton(part.PartName, () => SelectCoreAndBuild(part));
         }
     }
 
     public void SelectCoreAndBuild(RobotPartData selectedCore)
     {
-        RobotPersistenceManager manager = RobotPersistenceManager.Instance;
-
-        // 1. Guardar Core (y actualizar la restricción de Tier si aplica)
-        manager.selectedCoreData = selectedCore; 
+        var manager = RobotPersistenceManager.Instance;
         
-        // 2. Guardar elección para ensamblaje (usamos el tipo como clave genérica para el Core)
         manager.SelectPartForSocket(PartType.Core.ToString(), selectedCore); 
-
-        // 3. Reconstruir visualmente
         assembler.RebuildRobot();
-        
-        // 4. Proceder a seleccionar el Torso
         InitializeTorsoSelection();
     }
-
-    // =================================================================================
-    // PASO 2: SELECCIÓN DEL TORSO
-    // =================================================================================
 
     void InitializeTorsoSelection()
     {
         ClearSelectionPanel();
         CheckIfRobotIsComplete();
         
-        // AÑADIDO: Botón para volver al Core
         CreateButton("<< CAMBIAR NÚCLEO", () => InitializeCoreSelection());
 
-        // Obtener Torsos compatibles
-        List<RobotPartData> torsoParts = RobotPersistenceManager.Instance.GetAvailablePartsByFilter(PartType.Torso);
+        var torsoParts = RobotPersistenceManager.Instance.GetAvailablePartsByFilter(PartType.Torso);
 
-        foreach (RobotPartData part in torsoParts)
+        foreach (var part in torsoParts)
         {
-            string btnText = $"{part.partName} (T{(int)part.partTier + 1})";
+            string btnText = $"{part.PartName} (T{(int)part.PartTier + 1})";
             CreateButton(btnText, () => SelectTorsoAndFindSockets(part));
         }
     }
 
     public void SelectTorsoAndFindSockets(RobotPartData selectedTorso)
     {
-        RobotPersistenceManager manager = RobotPersistenceManager.Instance;
-
-        // 1. Obtener el ensamblaje actual
-        Transform coreAssembly = assembler.currentRobotAssembly.transform;
+        var manager = RobotPersistenceManager.Instance;
+        var coreAssembly = assembler.currentRobotAssembly.transform;
         
-        // 2. Buscar el socket del Torso en el Core
-        Socket coreTorsoSocket = coreAssembly.GetComponentsInChildren<Socket>()
+        var coreTorsoSocket = coreAssembly.GetComponentsInChildren<Socket>()
             .FirstOrDefault(s => s.acceptedType == PartType.Torso);
 
-        if (coreTorsoSocket == null)
-        {
-             Debug.LogError("Error Crítico: El Core seleccionado no tiene un Socket configurado con 'Accepted Type: Torso'.");
-             return;
-        }
+        if (coreTorsoSocket == null) { Debug.LogError("Error: Core no tiene socket de Torso."); return; }
 
-        // 3. Guardar la elección usando el nombre REAL del socket
         manager.SelectPartForSocket(coreTorsoSocket.socketName, selectedTorso); 
-        
-        // 4. Reconstruir para que aparezca el Torso visualmente
         assembler.RebuildRobot(); 
 
-        // 5. Encontrar el objeto Torso recién instanciado (buscamos la nueva referencia)
         coreAssembly = assembler.currentRobotAssembly.transform;
-        Socket refreshedSocket = coreAssembly.GetComponentsInChildren<Socket>()
+        var refreshedSocket = coreAssembly.GetComponentsInChildren<Socket>()
             .FirstOrDefault(s => s.socketName == coreTorsoSocket.socketName);
 
-        if (refreshedSocket == null || refreshedSocket.transform.childCount == 0)
-        {
-            Debug.LogError("No se pudo encontrar el Torso instanciado después del ensamblaje.");
-            return;
-        }
+        if (refreshedSocket == null || refreshedSocket.transform.childCount == 0) return;
 
-        GameObject instanciatedTorso = refreshedSocket.transform.GetChild(0).gameObject;
-
-        // 6. Obtener todos los sockets que trae el nuevo Torso (Brazos, Cabeza, etc.)
-        Socket[] foundSockets = instanciatedTorso.GetComponentsInChildren<Socket>();
-        currentTorsoSockets = new List<Socket>(foundSockets);
+        var instanciatedTorso = refreshedSocket.transform.GetChild(0).gameObject;
+        currentTorsoSockets = new List<Socket>(instanciatedTorso.GetComponentsInChildren<Socket>());
         
-        // 7. Ir al menú de Sockets
         InitializeSocketMenu();
     }
 
-    // =================================================================================
-    // PASO 3: MENÚ DE SOCKETS (Brazos Independientes y Navegación)
-    // =================================================================================
-
-    // Muestra una lista de "Slots" vacíos o llenos (Ej: "Brazo Derecho", "Cabeza")
-    void InitializeSocketMenu()
+    public void InitializeSocketMenu()
     {
         ClearSelectionPanel();
         CheckIfRobotIsComplete();
 
-        // AÑADIDO: Botón para volver al Torso
-        CreateButton("<< CAMBIAR TORSO", () => InitializeTorsoSelection());
+        CreateButton("<< VOLVER AL CUERPO", () => InitializeTorsoSelection());
 
         foreach (Socket socket in currentTorsoSockets)
         {
-            // Formatear un nombre bonito para el botón
             string displayName = FormatSocketName(socket.socketName);
             
-            // Verificar si ya hay algo equipado
-            bool isFilled = RobotPersistenceManager.Instance.SelectedParts.ContainsKey(socket.socketName);
+            string keyToCheck = socket.socketName; 
+            
+            bool isFilled = RobotPersistenceManager.Instance.SelectedParts.ContainsKey(keyToCheck);
             string status = isFilled ? "[LISTO]" : "[VACÍO]";
             
             string buttonText = $"{displayName} \n<size=70%>{status}</size>";
 
-            // El clic lleva a la selección de piezas para este socket específico
             CreateButton(buttonText, () => ShowPartSelectionForSocket(socket.socketName, socket.acceptedType));
         }
     }
 
-    // =================================================================================
-    // PASO 4: SELECCIÓN DE PIEZA ESPECÍFICA
-    // =================================================================================
-
-    // Muestra las piezas disponibles para un socket específico
+    // --- SELECCIÓN CON INVENTARIO Y NOMBRE DE SOCKET ---
     void ShowPartSelectionForSocket(string socketName, PartType requiredType)
     {
         ClearSelectionPanel();
-
-        // Guardamos qué socket estamos editando
+        var manager = RobotPersistenceManager.Instance;
         targetSocketName = socketName;
 
-        // Botón de Volver al menú de Sockets
+        _currentSocketDisplayName = FormatSocketName(socketName);
+        GameObject titleButton = CreateButton($"[EDITANDO: {_currentSocketDisplayName}]", null); 
+        titleButton.GetComponent<Button>().interactable = false;
+        
         CreateButton("<< VOLVER AL CUERPO", () => InitializeSocketMenu());
+        
+        string keyToSearch = targetSocketName;
+        
+        manager.SelectedParts.TryGetValue(keyToSearch, out RobotPartData currentlyEquippedPart);
 
-        // Obtener piezas disponibles
-        List<RobotPartData> parts = RobotPersistenceManager.Instance.GetAvailablePartsByFilter(requiredType);
+        var parts = manager.GetAvailablePartsByFilter(requiredType);
 
         foreach (RobotPartData part in parts)
         {
-            CreateButton(part.partName, () => AssignPartToSpecificSocket(part));
+            int availableCount = manager.GetPartCount(part.PartID);
+            bool isCurrentlyEquipped = currentlyEquippedPart != null && currentlyEquippedPart.PartID == part.PartID;
+            
+            // Si está equipada, sumamos +1 a la cuenta disponible para permitir la deselección/movimiento.
+            int actualAvailable = availableCount + (isCurrentlyEquipped ? 1 : 0);
+            bool isInteractable = actualAvailable > 0;
+            
+            string countText = isInteractable ? $"[{actualAvailable}]" : "[AGOTADO]";
+            string equippedStatus = isCurrentlyEquipped ? " (EQ)" : "";
+            string btnText = $"{part.PartName} {countText}{equippedStatus}";
+
+            GameObject buttonGO = CreateButton(btnText, () => AssignPartToSpecificSocket(part));
+            Button btn = buttonGO.GetComponent<Button>();
+            
+            if (!isInteractable && !isCurrentlyEquipped)
+            {
+                 btn.interactable = false;
+                 buttonGO.GetComponentInChildren<TMP_Text>().color = Color.gray;
+            }
         }
     }
 
-    void AssignPartToSpecificSocket(RobotPartData partData)
+    // [MODIFICACIÓN CLAVE] Permite deseleccionar la pieza si se hace clic de nuevo.
+    void AssignPartToSpecificSocket(RobotPartData newPartData)
     {
         if (string.IsNullOrEmpty(targetSocketName)) return;
 
-        // 1. Guardar la pieza en el socket específico
-        RobotPersistenceManager.Instance.SelectPartForSocket(targetSocketName, partData);
+        var manager = RobotPersistenceManager.Instance;
+        string newPartID = newPartData.PartID;
+        string keyToUse = targetSocketName;
+        
+        // Intentar obtener la pieza actualmente equipada
+        manager.SelectedParts.TryGetValue(keyToUse, out RobotPartData oldPartData);
 
-        // 2. Reconstruir el robot
+        // =========================================================
+        // LÓGICA DE DESELECCIÓN (UN-EQUIP)
+        // =========================================================
+        // Si la pieza nueva es IGUAL a la pieza ya equipada, la deseleccionamos.
+        if (oldPartData != null && oldPartData.PartID == newPartID)
+        {
+            // 1. Reembolsar la pieza al inventario
+            manager.AddItemToInventory(newPartID, 1);
+            
+            // 2. Eliminar la selección del socket
+            manager.SelectedParts.Remove(keyToUse); 
+            
+            assembler.RebuildRobot();
+            InitializeSocketMenu();
+            return; // Salir, la acción de deselección ha terminado
+        }
+        // =========================================================
+        
+        // 1. REEMBOLSO de la pieza antigua (Si estamos cambiando a una pieza diferente)
+        if (oldPartData != null)
+        {
+            // Como ya sabemos que no son la misma pieza (por el 'if' de arriba), la reembolsamos.
+            manager.AddItemToInventory(oldPartData.PartID, 1);
+        }
+        
+        // 2. GASTO de la pieza nueva
+        manager.RemoveItemFromInventory(newPartID, 1);
+        
+        // 3. Guardar la nueva elección
+        manager.SelectPartForSocket(keyToUse, newPartData);
+
         assembler.RebuildRobot();
-
-        // 3. Volver al menú del cuerpo
         InitializeSocketMenu();
     }
-
+    
     // =================================================================================
     // UTILIDADES
     // =================================================================================
     
-    // Verifica si el robot tiene al menos un Core y un Torso para habilitar el botón Start Game
     private void CheckIfRobotIsComplete()
     {
         if (startGameButton == null) return;
         
-        RobotPersistenceManager manager = RobotPersistenceManager.Instance;
-
-        // Requisito mínimo: Core y Torso seleccionados
-        bool hasCore = manager.selectedCoreData != null;
-        
-        // Asumimos que si hay un Core, y el jugador pasó al menú de Sockets, ya seleccionó un Torso.
-        // También podemos verificar si el diccionario SelectedParts tiene la clave del socket del Torso.
-        bool hasTorso = manager.SelectedParts.Any(kvp => kvp.Value.partType == PartType.Torso); 
+        var manager = RobotPersistenceManager.Instance;
+        bool hasCore = manager.SelectedCoreData != null;
+        bool hasTorso = manager.SelectedParts.Any(kvp => kvp.Value.PartType == PartType.Torso); 
         
         startGameButton.interactable = hasCore && hasTorso;
     }
 
-
-    // Función auxiliar para crear botones rápidamente
-    void CreateButton(string text, UnityEngine.Events.UnityAction action)
+    GameObject CreateButton(string text, UnityEngine.Events.UnityAction action)
     {
-        // ... (Tu implementación de CreateButton)
         GameObject buttonGO = Instantiate(partButtonPrefab, partSelectionPanel);
         
-        TMP_Text buttonText = buttonGO.GetComponentInChildren<TMP_Text>();
-        if (buttonText != null)
+        TMP_Text buttonTextTMP = buttonGO.GetComponentInChildren<TMP_Text>();
+        if (buttonTextTMP != null)
         {
-            buttonText.text = text;
+            buttonTextTMP.text = text;
+        }
+        else
+        {
+            Text buttonText = buttonGO.GetComponentInChildren<Text>();
+            if (buttonText != null)
+            {
+                 buttonText.text = text;
+            }
         }
 
         Button btn = buttonGO.GetComponent<Button>();
-        btn.onClick.AddListener(action);
+        if(action != null)
+        {
+            btn.onClick.AddListener(action);
+        }
+        
+        return buttonGO;
     }
 
     void ClearSelectionPanel()
     {
-        // ... (Tu implementación de ClearSelectionPanel)
         foreach (Transform child in partSelectionPanel)
         {
             Destroy(child.gameObject);
         }
     }
 
-    // Hace que "Socket_Arm_L" se vea como "Brazo Izquierdo"
     string FormatSocketName(string rawName)
     {
         return rawName
             .Replace("Socket_", "")
-            .Replace("Arm", "Brazo")
+            .Replace("Arms", "Brazo")
+            .Replace("Torso", "Torso")
             .Replace("Head", "Cabeza")
             .Replace("Legs", "Piernas")
             .Replace("_L", " Izq.")

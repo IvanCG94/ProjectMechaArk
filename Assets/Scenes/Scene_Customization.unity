@@ -148,15 +148,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e77661f219f13dc40b540c9de637d227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotPersistenceManager
-  availableParts:
-  - {fileID: 11400000, guid: 2a7c70e47da05ab4eba3917402e38316, type: 2}
+  _allPartsData:
   - {fileID: 11400000, guid: 8bca171a0de7e0b4c9fa063123f5b0cc, type: 2}
-  - {fileID: 11400000, guid: 8c9476b977ad95743bcc501120962112, type: 2}
-  - {fileID: 11400000, guid: d84886516413f6542ab961726388ef81, type: 2}
-  - {fileID: 11400000, guid: 8201f25e6ba04ed4da4f9f46080bd3e3, type: 2}
   - {fileID: 11400000, guid: c8e54d78c91a0a74ab4d5c5ea40b1d79, type: 2}
-  selectedCoreData: {fileID: 0}
-  nextSceneName: Scene_Game
+  - {fileID: 11400000, guid: 2a7c70e47da05ab4eba3917402e38316, type: 2}
+  - {fileID: 11400000, guid: 8c9476b977ad95743bcc501120962112, type: 2}
+  - {fileID: 11400000, guid: 8201f25e6ba04ed4da4f9f46080bd3e3, type: 2}
+  - {fileID: 11400000, guid: d84886516413f6542ab961726388ef81, type: 2}
+  _initialInventoryList:
+  - PartID: Arm_1_1
+    Count: 1
+  - PartID: Core_1_1
+    Count: 1
+  - PartID: Torso_1_1
+    Count: 1
 --- !u!4 &78890204
 Transform:
   m_ObjectHideFlags: 0
