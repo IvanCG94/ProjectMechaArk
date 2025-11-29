@@ -157,10 +157,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d84886516413f6542ab961726388ef81, type: 2}
   _initialInventoryList:
   - PartID: Arm_1_1
-    Count: 1
+    Count: 2
   - PartID: Core_1_1
     Count: 1
   - PartID: Torso_1_1
+    Count: 1
+  - PartID: Arm_1_2
+    Count: 2
+  - PartID: Head_1_1
     Count: 1
 --- !u!4 &78890204
 Transform:
@@ -754,6 +758,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1275254298}
   - component: {fileID: 1275254297}
+  - component: {fileID: 1275254299}
   m_Layer: 0
   m_Name: Customization_Root
   m_TagString: Untagged
@@ -789,6 +794,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1275254299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275254296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cad7712aa0712ef408559d2c63991e58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ModelRotator
+  _sensitivity: 10
 --- !u!1 &1581745947
 GameObject:
   m_ObjectHideFlags: 0
