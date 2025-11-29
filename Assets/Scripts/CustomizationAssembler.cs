@@ -15,8 +15,11 @@ public class CustomizationAssembler : MonoBehaviour
 
     public void RebuildRobot()
     {
+        // 1. DESTRUIR LO ANTERIOR (Sin lógica de reembolso de piezas secundarias)
         if (currentRobotAssembly != null)
         {
+            // Nota: Aquí se quitó la llamada a RefundEquippedParts() para probar la estabilidad.
+            
             Destroy(currentRobotAssembly);
             currentRobotAssembly = null;
         }
@@ -24,12 +27,16 @@ public class CustomizationAssembler : MonoBehaviour
         RobotPartData coreData = manager.SelectedCoreData;
         if (coreData == null) return;
 
+        // 2. Ensamblar el nuevo Core
         currentRobotAssembly = Instantiate(coreData.PartPrefab, transform.position, transform.rotation);
         currentRobotAssembly.transform.SetParent(transform);
         currentRobotAssembly.name = "Robot_Assembly";
 
+        // 3. Iniciar el Ensamblaje Recursivo
         AssemblePartRecursively(currentRobotAssembly.transform, manager.SelectedParts);
     }
+    
+    // NOTA: La función RefundEquippedParts ha sido eliminada de este script.
 
     void AssemblePartRecursively(Transform parentTransform, Dictionary<string, RobotPartData> selectedParts, int depth = 0)
     {
@@ -49,7 +56,7 @@ public class CustomizationAssembler : MonoBehaviour
             // Busca SIEMPRE por el nombre de socket específico.
             if (selectedParts.TryGetValue(socket.socketName, out partData))
             {
-                // Determinar si necesita espejo (aplica a cualquier parte bilateral que termine en _L)
+                // Determinar si necesita espejo
                 if (socket.socketName.EndsWith("_L"))
                 {
                     if (socket.acceptedType == PartType.Arms || socket.acceptedType == PartType.Legs)

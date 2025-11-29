@@ -82,4 +82,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Socket
   acceptedType: 1
-  socketName: Torso
+  socketName: Socket_Torso

@@ -121,8 +121,8 @@ MonoBehaviour:
     y: 0
     width: 380
     height: 933
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 76}
+  m_MaxSize: {x: 4001, y: 4026}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -377,8 +377,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 405
-    y: 617
+    x: 406
+    y: 24
     width: 1133
     height: 369
   m_SerializedDataModeController:
@@ -422,7 +422,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: a4ae0000
     m_LastClickedID: 44708
-    m_ExpandedIDs: 0000000044ae0000a0ae0000
+    m_ExpandedIDs: 000000003cae00003eae0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -451,7 +451,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000044ae0000
+    m_ExpandedIDs: 000000003cae00003eae0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -530,8 +530,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1540
-    y: 79
+    x: 1541
+    y: 24
     width: 379
     height: 907
   m_SerializedDataModeController:
@@ -580,7 +580,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 617
+    y: 24
     width: 404
     height: 369
   m_SerializedDataModeController:
@@ -597,8 +597,8 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 6eb00000
-      m_LastClickedID: 45166
+      m_SelectedIDs: 
+      m_LastClickedID: 0
       m_ExpandedIDs: 4c4dffff4057ffff4857ffff8ee9ffff8cebffff14fbfffff4ffffffb8ab0000d2ab000048b0000062b000006eb00000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -646,7 +646,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79
+    y: 24
     width: 1539
     height: 512
   m_SerializedDataModeController:
@@ -1267,7 +1267,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.27388152, y: 0.14911611, z: -0.042617295, w: 0.9493497}
     speed: 2
-    m_Value: {x: 0.27390027, y: 0.14766772, z: -0.042199507, w: 0.9494167}
+    m_Value: {x: -0.27388152, y: -0.14911611, z: 0.04261729, w: -0.94934964}
   m_Size:
     m_Target: 18.621449
     speed: 2

@@ -75,6 +75,20 @@ public class RobotCustomizationUI : MonoBehaviour
         var manager = RobotPersistenceManager.Instance;
         var coreAssembly = assembler.currentRobotAssembly.transform;
         
+        // 1. OBTENER EL TORSO VIEJO (para lógica de reembolso)
+        manager.SelectedParts.TryGetValue(manager.SelectedCoreData.PartType.ToString(), out RobotPartData oldCoreData);
+        string torsoKey = coreAssembly.GetComponentsInChildren<Socket>()
+            .FirstOrDefault(s => s.acceptedType == PartType.Torso)?.socketName ?? "Socket_Torso";
+        manager.SelectedParts.TryGetValue(torsoKey, out RobotPartData oldTorsoData);
+
+        // 2. [LÓGICA DE REEMBOLSO EN UI] Si el Torso viejo existe Y es diferente al nuevo
+        if (oldTorsoData != null && oldTorsoData.PartID != selectedTorso.PartID)
+        {
+            // Ejecutar la limpieza de Brazos, Cabezas, Piernas, etc.
+            RefundAllEquippedChildren();
+        }
+        
+        // 3. CONTINUAR CON EL MONTAJE DEL NUEVO TORSO
         var coreTorsoSocket = coreAssembly.GetComponentsInChildren<Socket>()
             .FirstOrDefault(s => s.acceptedType == PartType.Torso);
 
@@ -141,7 +155,6 @@ public class RobotCustomizationUI : MonoBehaviour
             int availableCount = manager.GetPartCount(part.PartID);
             bool isCurrentlyEquipped = currentlyEquippedPart != null && currentlyEquippedPart.PartID == part.PartID;
             
-            // Si está equipada, sumamos +1 a la cuenta disponible para permitir la deselección/movimiento.
             int actualAvailable = availableCount + (isCurrentlyEquipped ? 1 : 0);
             bool isInteractable = actualAvailable > 0;
             
@@ -160,7 +173,6 @@ public class RobotCustomizationUI : MonoBehaviour
         }
     }
 
-    // [MODIFICACIÓN CLAVE] Permite deseleccionar la pieza si se hace clic de nuevo.
     void AssignPartToSpecificSocket(RobotPartData newPartData)
     {
         if (string.IsNullOrEmpty(targetSocketName)) return;
@@ -169,35 +181,25 @@ public class RobotCustomizationUI : MonoBehaviour
         string newPartID = newPartData.PartID;
         string keyToUse = targetSocketName;
         
-        // Intentar obtener la pieza actualmente equipada
         manager.SelectedParts.TryGetValue(keyToUse, out RobotPartData oldPartData);
 
-        // =========================================================
-        // LÓGICA DE DESELECCIÓN (UN-EQUIP)
-        // =========================================================
-        // Si la pieza nueva es IGUAL a la pieza ya equipada, la deseleccionamos.
+        // 1. DESELECCIÓN (UN-EQUIP)
         if (oldPartData != null && oldPartData.PartID == newPartID)
         {
-            // 1. Reembolsar la pieza al inventario
             manager.AddItemToInventory(newPartID, 1);
-            
-            // 2. Eliminar la selección del socket
             manager.SelectedParts.Remove(keyToUse); 
             
             assembler.RebuildRobot();
             InitializeSocketMenu();
-            return; // Salir, la acción de deselección ha terminado
+            return; 
         }
-        // =========================================================
         
-        // 1. REEMBOLSO de la pieza antigua (Si estamos cambiando a una pieza diferente)
+        // 2. REEMBOLSO DE VIEJO Y GASTO DE NUEVO
         if (oldPartData != null)
         {
-            // Como ya sabemos que no son la misma pieza (por el 'if' de arriba), la reembolsamos.
             manager.AddItemToInventory(oldPartData.PartID, 1);
         }
         
-        // 2. GASTO de la pieza nueva
         manager.RemoveItemFromInventory(newPartID, 1);
         
         // 3. Guardar la nueva elección
@@ -207,6 +209,42 @@ public class RobotCustomizationUI : MonoBehaviour
         InitializeSocketMenu();
     }
     
+    // =================================================================================
+    // LÓGICA DE REEMBOLSO (MOVIMIENTO DEL ENSAMBLADOR A LA UI)
+    // =================================================================================
+    
+    /// <summary>
+    /// Devuelve al inventario todas las piezas secundarias conectadas al torso actual.
+    /// Se llama cuando el usuario va a cambiar el Torso por uno diferente.
+    /// </summary>
+    private void RefundAllEquippedChildren()
+    {
+        var manager = RobotPersistenceManager.Instance;
+        
+        // Obtenemos una lista de las claves a eliminar (Brazos, Cabeza, Piernas, Accesorios)
+        List<string> keysToRefundAndRemove = new List<string>();
+
+        foreach (var pair in manager.SelectedParts)
+        {
+            RobotPartData part = pair.Value;
+            string key = pair.Key;
+
+            // Buscamos todas las piezas que NO son Core ni Torso.
+            if (part.PartType != PartType.Core && part.PartType != PartType.Torso)
+            {
+                // Reembolsamos la pieza al inventario
+                manager.AddItemToInventory(part.PartID, 1);
+                keysToRefundAndRemove.Add(key);
+            }
+        }
+        
+        // Eliminamos las piezas del diccionario SelectedParts
+        foreach(string key in keysToRefundAndRemove)
+        {
+            manager.SelectedParts.Remove(key);
+        }
+    }
+
     // =================================================================================
     // UTILIDADES
     // =================================================================================
