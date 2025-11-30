@@ -1,6 +1,52 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4146791081711334473
+--- !u!1 &965843151201694339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5484535906474858622}
+  - component: {fileID: 645734522202848599}
+  m_Layer: 0
+  m_Name: TorsoSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5484535906474858622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965843151201694339}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4883031903134327085}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &645734522202848599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965843151201694339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8605e760837c034ebe910f0d833cc88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Socket
+  acceptedType: 1
+  socketName: Torso
+--- !u!1001 &4922076886139782854
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,31 +56,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -93.23711
+      value: 1.0596818
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6267696
+      value: 0.61176956
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -156.56444
+      value: -2.6280513
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071067
+      value: -3.7493994e-33
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: -6.123234e-17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 6.123234e-17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -52,34 +98,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Core_1_1
       objectReference: {fileID: 0}
-    - target: {fileID: 3286609577938368054, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
-      propertyPath: m_Name
-      value: Core
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3286609577938368054, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8668788848030567307}
+      addedObject: {fileID: 5484535906474858622}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
---- !u!1 &1445723082621764223 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3286609577938368054, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
-  m_PrefabInstance: {fileID: 4146791081711334473}
+--- !u!4 &4883031903134327085 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 18a3ef8a8710fcd45b55ad6ccadaeee9, type: 3}
+  m_PrefabInstance: {fileID: 4922076886139782854}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8668788848030567307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1445723082621764223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8605e760837c034ebe910f0d833cc88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Socket
-  acceptedType: 1
-  socketName: Socket_Torso

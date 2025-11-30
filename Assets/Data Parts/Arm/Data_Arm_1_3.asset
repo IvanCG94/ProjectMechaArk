@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fec0c29433e9fc499951dd8001ed500, type: 3}
   m_Name: Data_Arm_1_3
   m_EditorClassIdentifier: Assembly-CSharp::RobotPartData
-  <PartName>k__BackingField: Pieza Nueva
+  <PartName>k__BackingField: Brazo con addons
   <PartType>k__BackingField: 3
-  <PartID>k__BackingField: 
+  <PartID>k__BackingField: Arm_1_3
   <PartTier>k__BackingField: 0
-  <PartPrefab>k__BackingField: {fileID: 0}
-  <MaxAllowedTier>k__BackingField: 2
+  <PartPrefab>k__BackingField: {fileID: 6559605564237612213, guid: 4c3264bd80db7ce4c92de96dc0a094ca, type: 3}
+  <MaxAllowedTier>k__BackingField: 0
   <HealthBonus>k__BackingField: 100
   <EnergyConsumption>k__BackingField: 5
   <Weight>k__BackingField: 5

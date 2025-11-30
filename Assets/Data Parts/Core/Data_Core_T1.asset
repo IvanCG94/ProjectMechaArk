@@ -16,7 +16,7 @@ MonoBehaviour:
   <PartType>k__BackingField: 0
   <PartID>k__BackingField: Core_1_1
   <PartTier>k__BackingField: 0
-  <PartPrefab>k__BackingField: {fileID: 3840784697531844888, guid: 7c6da79d8c8cfa647a231147cb0cd832, type: 3}
+  <PartPrefab>k__BackingField: {fileID: 5228629725450664855, guid: 7c6da79d8c8cfa647a231147cb0cd832, type: 3}
   <MaxAllowedTier>k__BackingField: 0
   <HealthBonus>k__BackingField: 100
   <EnergyConsumption>k__BackingField: 5
