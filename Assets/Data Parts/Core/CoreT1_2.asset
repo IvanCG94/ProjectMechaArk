@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fec0c29433e9fc499951dd8001ed500, type: 3}
+  m_Name: CoreT1_2
+  m_EditorClassIdentifier: Assembly-CSharp::RobotPartData
+  <PartName>k__BackingField: Core
+  <PartType>k__BackingField: 0
+  <PartID>k__BackingField: CoreT1
+  <PartTier>k__BackingField: 0
+  <PartPrefab>k__BackingField: {fileID: 4476020621959768066, guid: 5d90434e1a13283429c2656af8978434, type: 3}
+  <MaxAllowedTier>k__BackingField: 0
+  <HealthBonus>k__BackingField: 100
+  <EnergyConsumption>k__BackingField: 5
+  <Weight>k__BackingField: 5

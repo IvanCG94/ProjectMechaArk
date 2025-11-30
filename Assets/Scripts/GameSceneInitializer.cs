@@ -4,6 +4,11 @@ using System.Collections.Generic;
 public class GameSceneInitializer : MonoBehaviour
 {
     private const int MAX_DEPTH = 50;
+    
+    // Referencia al script que maneja la cámara
+    private CameraFinder cameraFinder; 
+    
+    // Asignado fuera del script: public PhysicMaterial zeroFrictionMaterial;
 
     void Start()
     {
@@ -13,33 +18,33 @@ public class GameSceneInitializer : MonoBehaviour
             return;
         }
 
+        // LÍNEA MODERNA: Usamos FindFirstObjectByType para evitar el warning 'obsolete'.
+        cameraFinder = FindFirstObjectByType<CameraFinder>();
+
+        if (cameraFinder == null)
+        {
+            Debug.LogError("ERROR GRAVE: CameraFinder no encontrado en la escena. El zoom fallará.");
+        } else {
+            Debug.Log("DIAGNÓSTICO: Referencia a CameraFinder encontrada con éxito.");
+        }
+
         AssembleFinalRobot(RobotPersistenceManager.Instance.SelectedCoreData, RobotPersistenceManager.Instance.SelectedParts);
     }
 
     void AssembleFinalRobot(RobotPartData coreData, Dictionary<string, RobotPartData> selectedParts)
     {
-        // 1. Instanciar
         GameObject robotRoot = Instantiate(coreData.PartPrefab, transform.position, transform.rotation);
         robotRoot.name = "Player_Robot";
 
-        // 2. Ensamblar todas las partes
         AssemblePartRecursively(robotRoot.transform, selectedParts);
-
-        // =============================================================
-        // CORRECCIÓN CRÍTICA: FORZAR ACTUALIZACIÓN DE FÍSICAS
-        // =============================================================
-        // Esto obliga a Unity a calcular las posiciones reales de las piernas/brazos
-        // ANTES de que intentemos medirlos. Sin esto, miden 0 o están en el origen.
         Physics.SyncTransforms(); 
-        // =============================================================
 
-        // 3. Ajustar Collider y Masa
         Rigidbody rb = robotRoot.AddComponent<Rigidbody>();
         CapsuleCollider col = robotRoot.AddComponent<CapsuleCollider>();
+        // Note: Se asume que el PhysicMaterial se asigna en el Inspector o por otra lógica.
 
         FitColliderToChildren(robotRoot, col, rb);
 
-        // 4. Agregar Cerebro
         RobotController controller = robotRoot.AddComponent<RobotController>();
         controller.groundLayers = -1; 
         
@@ -52,55 +57,51 @@ public class GameSceneInitializer : MonoBehaviour
         
         if (renderers.Length == 0) return;
 
-        // 1. Inicializar los bounds con el PRIMER renderer válido que encontremos
         Bounds combinedBounds = new Bounds();
         bool hasBounds = false;
 
         foreach (Renderer r in renderers)
         {
-            // Ignoramos partículas o trails, solo queremos cuerpo sólido
             if (r is SkinnedMeshRenderer || r is MeshRenderer)
             {
-                if (!hasBounds)
-                {
-                    combinedBounds = r.bounds;
-                    hasBounds = true;
-                }
-                else
-                {
-                    combinedBounds.Encapsulate(r.bounds);
-                }
+                if (!hasBounds) { combinedBounds = r.bounds; hasBounds = true; }
+                else { combinedBounds.Encapsulate(r.bounds); }
             }
         }
 
         if (hasBounds)
         {
-            // 2. Calcular dimensiones
-            float height = combinedBounds.size.y;
+            float height = combinedBounds.size.y; 
             Vector3 localCenter = combinedBounds.center - root.transform.position;
 
-            // 3. Aplicar al Collider (ESTO USA ESCALA MUNDO - EL PROBLEMA)
+            // 1. Aplicar al Collider (Con el tamaño MUNDO 8.22m)
             col.height = height;
             col.center = new Vector3(0, localCenter.y, 0); 
             
-            // Usamos el promedio de ancho y largo para el radio
             float width = (combinedBounds.size.x + combinedBounds.size.z) / 2f;
             col.radius = width / 2f; 
 
-            // 4. Masa dinámica
+            // 2. Masa dinámica
             rb.mass = height * 25f; 
+            
+            // 3. LLamada a la calibración de cámara
+            if (cameraFinder != null)
+            {
+                Debug.Log($"DIAGNÓSTICO: Llamando a CalibrateCamera con altura: {height}m");
+                cameraFinder.CalibrateCamera(root.transform, height);
+            } else {
+                Debug.LogWarning("DIAGNÓSTICO: cameraFinder es nulo. No se pudo llamar.");
+            }
 
             Debug.Log($"Robot Medido -> Altura: {height}m | Centro Y: {localCenter.y}");
             
-            // === AYUDA VISUAL (DEBUG) ===
-            // ESTO ESTÁ ROTO AHORA POR LA ESCALA
+            // 4. AYUDA VISUAL (DEBUG)
             var debug = root.AddComponent<BoundsVisualizer>();
             debug.center = col.center;
             debug.size = new Vector3(col.radius * 2, col.height, col.radius * 2);
         }
     }
 
-    // ... (El resto de funciones: AssemblePartRecursively y PropagateSideToSockets deben estar en tu archivo)
     void AssemblePartRecursively(Transform parentTransform, Dictionary<string, RobotPartData> selectedParts, int depth = 0)
     {
         if (depth > MAX_DEPTH) return;
@@ -150,7 +151,6 @@ public class GameSceneInitializer : MonoBehaviour
     }
 }
 
-// ASUMIMOS QUE ESTA CLASE AUXILIAR ESTÁ DEFINIDA AL FINAL DEL ARCHIVO:
 public class BoundsVisualizer : MonoBehaviour
 {
     public Vector3 center;

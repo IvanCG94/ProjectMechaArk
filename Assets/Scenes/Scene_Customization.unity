@@ -149,26 +149,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotPersistenceManager
   _allPartsData:
-  - {fileID: 11400000, guid: 8bca171a0de7e0b4c9fa063123f5b0cc, type: 2}
-  - {fileID: 11400000, guid: c8e54d78c91a0a74ab4d5c5ea40b1d79, type: 2}
-  - {fileID: 11400000, guid: 2a7c70e47da05ab4eba3917402e38316, type: 2}
-  - {fileID: 11400000, guid: 8c9476b977ad95743bcc501120962112, type: 2}
-  - {fileID: 11400000, guid: 8201f25e6ba04ed4da4f9f46080bd3e3, type: 2}
-  - {fileID: 11400000, guid: d84886516413f6542ab961726388ef81, type: 2}
-  - {fileID: 11400000, guid: 52b1329ae4cdf214db6dc5b02b7b4bd3, type: 2}
+  - {fileID: 11400000, guid: 6e26b0e9d1e836c4290630e2d3f466dc, type: 2}
+  - {fileID: 11400000, guid: 75ba3960dde577e46b28fee1fd75b386, type: 2}
+  - {fileID: 11400000, guid: f9f33e87c90298b489b78556678d73dd, type: 2}
+  - {fileID: 11400000, guid: acb7ddb09b868d244bc93e075b79b3c5, type: 2}
+  - {fileID: 11400000, guid: db9042579728d704f99cd6867f406cfc, type: 2}
   _initialInventoryList:
-  - PartID: Arm_1_1
+  - PartID: ArmT1_2
     Count: 2
-  - PartID: Core_1_1
+  - PartID: CoreT1_2
     Count: 1
-  - PartID: Torso_1_1
+  - PartID: TorsoT1_2
     Count: 1
-  - PartID: Arm_1_2
+  - PartID: LegT1_2
     Count: 2
-  - PartID: Head_1_1
+  - PartID: HeadT1_2
     Count: 1
-  - PartID: Arm_1_3
-    Count: 4
 --- !u!4 &78890204
 Transform:
   m_ObjectHideFlags: 0
@@ -624,8 +620,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.018305238, y: 0.0054032593, z: -0.00022392109, w: -0.9998178}
-  m_LocalPosition: {x: -0.15672609, y: 11.188783, z: -16.49798}
+  m_LocalRotation: {x: -0.0006079927, y: 0.9995255, z: -0.019798854, w: -0.023588417}
+  m_LocalPosition: {x: 0.20622337, y: 13.210628, z: 2.8872032}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
