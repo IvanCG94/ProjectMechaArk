@@ -48,9 +48,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4594995697124686004, guid: 8272188cad554194bba2f1dff44b64cc, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8272188cad554194bba2f1dff44b64cc, type: 3}
       propertyPath: m_Name
       value: ArmT1_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8272188cad554194bba2f1dff44b64cc, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

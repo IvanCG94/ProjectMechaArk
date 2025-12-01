@@ -16,7 +16,7 @@ MonoBehaviour:
   <PartType>k__BackingField: 4
   <PartID>k__BackingField: LegT1_2
   <PartTier>k__BackingField: 0
-  <PartPrefab>k__BackingField: {fileID: 3389892770594009721, guid: bb1a2851780836448a3f2a99d36a0b9a, type: 3}
+  <PartPrefab>k__BackingField: {fileID: 655990462283794592, guid: bb1a2851780836448a3f2a99d36a0b9a, type: 3}
   <MaxAllowedTier>k__BackingField: 0
   <HealthBonus>k__BackingField: 100
   <EnergyConsumption>k__BackingField: 5
