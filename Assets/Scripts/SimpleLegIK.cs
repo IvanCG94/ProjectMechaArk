@@ -23,7 +23,7 @@ public class SimpleLegIK : MonoBehaviour
     [Header("Detección de Suelo (DEBUG MODE)")]
     public bool enableGrounding = true; 
     public LayerMask groundLayer;       
-    public float raycastOffsetHeight = 0.5f; // Bajé esto un poco para probar
+    public float raycastOffsetHeight = 0.5f; 
     
     [Header("Estado")]
     public Transform currentTarget; 
@@ -73,32 +73,23 @@ public class SimpleLegIK : MonoBehaviour
 
     void DetectGround()
     {
-        // Origen del rayo: Un poco arriba del muslo
         Vector3 rayOrigin = boneThigh.position + (Vector3.up * raycastOffsetHeight);
         RaycastHit hit;
         
-        // El rayo debe ser largo: La pierna + un margen extra (2.0 metros extra)
         float rayDistance = totalLegLength + 2.0f;
 
-        // DIBUJO DEL RAYO (VISUAL)
-        // Esto dibujará una línea en la ventana SCENE mientras juegas
         Debug.DrawLine(rayOrigin, rayOrigin + (Vector3.down * rayDistance), Color.yellow);
 
         if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayDistance, groundLayer))
         {
-            // --- CASO: IMPACTO (SUELO DETECTADO) ---
             currentTarget.position = hit.point;
             
-            // Rotación del pie según el suelo
             Vector3 robotForward = transform.root != null ? transform.root.forward : transform.forward;
             Vector3 projectedForward = Vector3.ProjectOnPlane(robotForward, hit.normal).normalized;
             currentTarget.rotation = Quaternion.LookRotation(projectedForward, hit.normal);
 
-            // DEBUG VISUAL: Línea VERDE si toca suelo
             Debug.DrawLine(rayOrigin, hit.point, Color.green);
             
-            // LOG DE CONSOLA (Solo si toca algo que NO sea Ground para avisarte)
-            // Si la capa no se llama "Ground", te avisará.
             string layerName = LayerMask.LayerToName(hit.collider.gameObject.layer);
             if (layerName != "Ground")
             {
@@ -107,15 +98,11 @@ public class SimpleLegIK : MonoBehaviour
         }
         else
         {
-            // --- CASO: AIRE (NO TOCÓ NADA) ---
-            // Estiramos la pierna totalmente hacia abajo
             Vector3 footHangingPos = rayOrigin + (Vector3.down * totalLegLength);
             currentTarget.position = footHangingPos;
             
-            // Rotación neutral
             currentTarget.rotation = (transform.root != null) ? transform.root.rotation : transform.rotation;
 
-            // DEBUG VISUAL: Línea ROJA si falla
             Debug.DrawLine(rayOrigin, rayOrigin + (Vector3.down * rayDistance), Color.red);
         }
     }
@@ -158,7 +145,14 @@ public class SimpleLegIK : MonoBehaviour
         ApplyRot(boneThigh, kneePos, planeNormal, useThighOffset);
         ApplyRot(boneShin, targetPos, planeNormal, useShinOffset);
         
+        // --- SECCIÓN DEL PIE CORREGIDA (180 grados añadidos) ---
         boneFoot.rotation = currentTarget.rotation;
+        
+        // CORRECCIÓN DE EJE: Antes era 90, sumamos 180 para girarlo. 
+        // 90 + 180 = 270 (que es equivalente a -90)
+        boneFoot.Rotate(-90f, 0, 180); 
+
+        // OFFSET MANUAL
         boneFoot.Rotate(useFootOffset);
     }
 
