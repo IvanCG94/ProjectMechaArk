@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Animations.Rigging; // <--- ¡NUEVO! Importante para el sistema de Rigging
 
 public class GameSceneInitializer : MonoBehaviour
 {
@@ -47,6 +48,46 @@ public class GameSceneInitializer : MonoBehaviour
 
         RobotController controller = robotRoot.AddComponent<RobotController>();
         controller.groundLayers = -1; 
+        
+        // ====================================================================
+        //  BLOQUE NUEVO: CONFIGURACIÓN AUTOMÁTICA DE ANIMATION RIGGING
+        // ====================================================================
+
+        // 1. El RigBuilder necesita OBLIGATORIAMENTE un componente Animator
+        //    (Aunque no tengas animaciones, el sistema lo requiere para funcionar)
+        Animator anim = robotRoot.GetComponent<Animator>();
+        if (anim == null) 
+        {
+            anim = robotRoot.AddComponent<Animator>();
+        }
+
+        // 2. Añadimos el RigBuilder (El cerebro del IK) al padre del robot
+        RigBuilder rigBuilder = robotRoot.AddComponent<RigBuilder>();
+
+        // 3. Buscamos todas las piernas (o brazos) que tengan un componente "Rig"
+        //    (Esto buscará dentro de los prefabs que acabas de instanciar)
+        Rig[] childRigs = robotRoot.GetComponentsInChildren<Rig>();
+
+        // 4. Conectamos las piernas encontradas al cerebro
+        if (childRigs.Length > 0)
+        {
+            rigBuilder.layers.Clear();
+            foreach (var rig in childRigs)
+            {
+                // Añadimos cada pierna como una capa activa
+                rigBuilder.layers.Add(new RigLayer(rig, true)); 
+            }
+            
+            // 5. Encendemos el sistema
+            rigBuilder.Build();
+            Debug.Log($"[SISTEMA IK] Se conectaron {childRigs.Length} partes con Rigging al RigBuilder.");
+        }
+        else
+        {
+            Debug.LogWarning("[SISTEMA IK] No se encontraron componentes 'Rig' en las partes del robot. El IK de Animation Rigging no se activará.");
+        }
+
+        // ====================================================================
         
         Debug.Log("¡Robot Jugable Listo!");
     }
